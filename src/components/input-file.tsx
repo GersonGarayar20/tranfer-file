@@ -65,10 +65,22 @@ export default function InputFile() {
     handleFileUpload(event.dataTransfer.files);
   };
 
+  const truncateFileName = (name: string) => {
+    const extension = name.split(".").pop();
+    const baseName = name.replace(/\.(jpg|jpeg)$/i, "");
+    if (baseName.length > 20) {
+      return `${baseName.substring(0, 17)}...${
+        extension ? `.${extension}` : ""
+      }`;
+    }
+    return extension ? `${baseName}.${extension}` : baseName;
+  };
+
   return (
-    <section className="p-6 w-full">
-      <h2 className="text-2xl font-semibold mb-6">Subir archivos</h2>
-      <div className="relative w-full h-96 flex flex-col justify-center items-center p-4">
+    <section className="p-6 w-full flex flex-col gap-6">
+      <h2 className="text-2xl font-semibold">Subir archivos</h2>
+
+      <section className="relative w-full h-96 flex flex-col justify-center items-center p-4">
         <div
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -99,38 +111,42 @@ export default function InputFile() {
           className="hidden"
           ref={inputFileRef}
         />
-      </div>
+      </section>
 
       <footer>
         {uploadedFiles.length > 0 && (
-          <div className="flex flex-col gap-2 mt-6">
-            <ul>
-              {uploadedFiles.map((file, index) => (
-                <li
-                  key={index}
-                  className="flex items-center gap-3 border p-3 rounded-lg"
-                >
-                  <div className="p-2">
-                    <FileIcon className="size-6 text-orange-500" />
-                  </div>
-                  <div className="flex-1">
-                    <p>{file.name}</p>
-                    <span className="text-sm text-neutral-500">
-                      .{file.type.split("/")[1]} | {file.size} bytes
-                    </span>
-                  </div>
-                  <footer className="flex gap-2 items-center text-neutral-500">
-                    <button className="p-2 rounded-full border hover:text-blue-500">
-                      <ArrowDownToLineIcon className="size-4" />
-                    </button>
-                    <button className="p-2 rounded-full border hover:text-red-500">
-                      <TrashIcon className="size-4" />
-                    </button>
-                  </footer>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <ul className="flex flex-col gap-2">
+            {uploadedFiles.map((file, index) => (
+              <li
+                key={index}
+                className="flex items-center gap-3 border p-3 rounded-lg"
+              >
+                <div className="p-2">
+                  <FileIcon className="size-6 text-orange-500" />
+                </div>
+                <div className="flex-1">
+                  <p>{truncateFileName(file.name)}</p>
+                  <span className="text-sm text-neutral-500">
+                    .{file.type.split("/")[1]} | {file.size} bytes
+                  </span>
+                </div>
+                <footer className="flex gap-2 items-center text-neutral-500">
+                  <button
+                    className="p-2 rounded-full border hover:text-blue-500"
+                    title="Descargar"
+                  >
+                    <ArrowDownToLineIcon className="size-4" />
+                  </button>
+                  <button
+                    className="p-2 rounded-full border hover:text-red-500"
+                    title="Eliminar"
+                  >
+                    <TrashIcon className="size-4" />
+                  </button>
+                </footer>
+              </li>
+            ))}
+          </ul>
         )}
       </footer>
     </section>
